@@ -1,0 +1,435 @@
+import { Slider, VerticalBox, Button, GroupBox, ScrollView, HorizontalBox, Switch } from "std-widgets.slint";
+
+// Modern display icon component
+component DisplayIcon inherits Rectangle {
+    width: 24px;
+    height: 24px;
+    
+    Rectangle {
+        width: 20px;
+        height: 14px;
+        x: 2px;
+        y: 2px;
+        border-radius: 2px;
+        background: #0d6efd;
+    }
+    
+    Rectangle {
+        width: 8px;
+        height: 2px;
+        x: 8px;
+        y: 18px;
+        background: #0d6efd;
+    }
+    
+    Rectangle {
+        width: 12px;
+        height: 3px;
+        x: 6px;
+        y: 20px;
+        border-radius: 1px;
+        background: #0d6efd;
+    }
+}
+
+// Lightning bolt icon for master control
+component LightningIcon inherits Rectangle {
+    width: 20px;
+    height: 20px;
+    
+    Path {
+        fill: #ffc107;
+        commands: "M 10 0 L 6 10 L 10 10 L 8 20 L 14 8 L 10 8 Z";
+    }
+}
+
+// Brightness icon
+component BrightnessIcon inherits Rectangle {
+    width: 20px;
+    height: 20px;
+    
+    Rectangle {
+        width: 8px;
+        height: 8px;
+        x: 6px;
+        y: 6px;
+        border-radius: 4px;
+        background: #ffc107;
+    }
+    
+    // Rays
+    Rectangle { width: 2px; height: 4px; x: 9px; y: 0px; background: #ffc107; }
+    Rectangle { width: 2px; height: 4px; x: 9px; y: 16px; background: #ffc107; }
+    Rectangle { width: 4px; height: 2px; x: 0px; y: 9px; background: #ffc107; }
+    Rectangle { width: 4px; height: 2px; x: 16px; y: 9px; background: #ffc107; }
+}
+
+// Individual display control component - compact modern design
+component DisplayControl inherits Rectangle {
+    in-out property<string> display_name: "Display";
+    in-out property<string> serial_number: "";
+    in-out property<float> brightness: 50;
+    in-out property<bool> is_enabled: true;
+    callback brightness_changed(serial: string, value: float);
+    
+    border-radius: 10px;
+    background: #f1f3f5;
+    border-width: 1px;
+    border-color: #dee2e6;
+    
+    VerticalLayout {
+        padding: 10px;
+        spacing: 6px;
+        
+        // Compact header with display info
+        HorizontalLayout {
+            spacing: 10px;
+            alignment: space-between;
+            
+            HorizontalLayout {
+                spacing: 8px;
+                
+                DisplayIcon {
+                    y: 2px;
+                }
+                
+                VerticalLayout {
+                    spacing: 2px;
+                    Text {
+                        text: display_name;
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #212529;
+                    }
+                    Text {
+                        text: "Serial: " + serial_number;
+                        font-size: 10px;
+                        color: #6c757d;
+                    }
+                }
+            }
+            
+            Rectangle {
+                width: 50px;
+                Text {
+                    text: round(brightness) + "%";
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #0d6efd;
+                    horizontal-alignment: right;
+                }
+            }
+        }
+        
+        // Brightness slider
+        Slider {
+            enabled: is_enabled;
+            minimum: 0;
+            maximum: 100;
+            value: brightness;
+            
+            changed(value) => {
+                brightness = value;
+            }
+            released(value) => {
+                brightness = value;
+                brightness_changed(serial_number, value);
+            }
+        }
+    }
+}
+
+export component BrightnessUI inherits Window {
+    title: "Studio Display Brightness Control";
+    preferred-width: 500px;
+    preferred-height: 520px;
+    min-width: 460px;
+    min-height: 350px;
+    
+    // Enable high-DPI support
+    default-font-size: 13px;
+    
+    // Properties for display management
+    in-out property<int> display_count: 0;
+    in-out property<float> master_brightness: 50;
+    
+    // Display properties (up to 4 displays)
+    in-out property<string> display1_name: "";
+    in-out property<string> display1_serial: "";
+    in-out property<float> display1_brightness: 50;
+    
+    in-out property<string> display2_name: "";
+    in-out property<string> display2_serial: "";
+    in-out property<float> display2_brightness: 50;
+    
+    in-out property<string> display3_name: "";
+    in-out property<string> display3_serial: "";
+    in-out property<float> display3_brightness: 50;
+    
+    in-out property<string> display4_name: "";
+    in-out property<string> display4_serial: "";
+    in-out property<float> display4_brightness: 50;
+    
+    // Callbacks
+    callback master_brightness_changed(value: float);
+    callback individual_brightness_changed(serial: string, value: float);
+    
+    background: #fafbfc;
+    
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+        
+        // Modern compact header with icon
+        Rectangle {
+            height: 60px;
+            background: #ffffff;
+            border-radius: 8px;
+            drop-shadow-blur: 4px;
+            drop-shadow-color: #00000010;
+            
+            HorizontalLayout {
+                padding-left: 16px;
+                padding-right: 16px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                spacing: 14px;
+                
+                Rectangle {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
+                    background: #667eea;
+                    
+                    Rectangle {
+                        width: 28px;
+                        height: 20px;
+                        x: 6px;
+                        y: 8px;
+                        border-radius: 3px;
+                        border-width: 2px;
+                        border-color: #ffffff;
+                    }
+                    
+                    Rectangle {
+                        width: 10px;
+                        height: 2px;
+                        x: 15px;
+                        y: 30px;
+                        background: #ffffff;
+                    }
+                    
+                    Rectangle {
+                        width: 16px;
+                        height: 3px;
+                        x: 12px;
+                        y: 33px;
+                        border-radius: 1.5px;
+                        background: #ffffff;
+                    }
+                }
+                
+                VerticalLayout {
+                    spacing: 4px;
+                    
+                    Text {
+                        text: "Studio Display Control";
+                        font-size: 17px;
+                        font-weight: 700;
+                        color: #212529;
+                    }
+                    
+                    HorizontalLayout {
+                        spacing: 6px;
+                        
+                        Rectangle {
+                            width: 6px;
+                            height: 6px;
+                            y: 2px;
+                            border-radius: 3px;
+                            background: #28a745;
+                        }
+                        
+                        Text {
+                            text: display_count == 1 ? "1 Display Connected" : display_count + " Displays Connected";
+                            font-size: 11px;
+                            color: #6c757d;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Master control section - modern compact design
+        if display_count > 0: GroupBox {
+            title: display_count > 1 ? "Master Control" : "Brightness";
+            
+            VerticalLayout {
+                padding: 12px;
+                spacing: 8px;
+                
+                HorizontalLayout {
+                    spacing: 10px;
+                    alignment: space-between;
+                    
+                    Text {
+                        text: display_count > 1 ? "Control all displays" : "Adjust brightness";
+                        vertical-alignment: center;
+                        font-size: 12px;
+                        color: #6c757d;
+                    }
+                    
+                    Rectangle {
+                        width: 70px;
+                        Text {
+                            text: round(master_brightness) + "%";
+                            font-size: 20px;
+                            font-weight: 700;
+                            color: #0d6efd;
+                            horizontal-alignment: right;
+                        }
+                    }
+                }
+                
+                Slider {
+                    minimum: 0;
+                    maximum: 100;
+                    value: master_brightness;
+                    
+                    changed(value) => {
+                        master_brightness = value;
+                        // Update all individual display values
+                        display1_brightness = value;
+                        display2_brightness = value;
+                        display3_brightness = value;
+                        display4_brightness = value;
+                    }
+                    released(value) => {
+                        master_brightness = value;
+                        master_brightness_changed(value);
+                    }
+                }
+            }
+        }
+        
+        // Individual displays section - compact, no scrolling needed
+        if display_count > 1: GroupBox {
+            title: "Individual Controls";
+            
+            VerticalLayout {
+                spacing: 8px;
+                padding: 8px;
+                
+                if display1_serial != "": DisplayControl {
+                    display_name: display1_name;
+                    serial_number: display1_serial;
+                    brightness: display1_brightness;
+                    is_enabled: true;
+                    brightness_changed(serial, value) => {
+                        individual_brightness_changed(serial, value);
+                    }
+                }
+                
+                if display2_serial != "": DisplayControl {
+                    display_name: display2_name;
+                    serial_number: display2_serial;
+                    brightness: display2_brightness;
+                    is_enabled: true;
+                    brightness_changed(serial, value) => {
+                        individual_brightness_changed(serial, value);
+                    }
+                }
+                
+                if display3_serial != "": DisplayControl {
+                    display_name: display3_name;
+                    serial_number: display3_serial;
+                    brightness: display3_brightness;
+                    is_enabled: true;
+                    brightness_changed(serial, value) => {
+                        individual_brightness_changed(serial, value);
+                    }
+                }
+                
+                if display4_serial != "": DisplayControl {
+                    display_name: display4_name;
+                    serial_number: display4_serial;
+                    brightness: display4_brightness;
+                    is_enabled: true;
+                    brightness_changed(serial, value) => {
+                        individual_brightness_changed(serial, value);
+                    }
+                }
+            }
+        }
+        
+        // Compact info footer
+        if display_count > 0: Rectangle {
+            height: 30px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            
+            HorizontalLayout {
+                padding-left: 14px;
+                padding-right: 14px;
+                padding-top: 7px;
+                padding-bottom: 7px;
+                alignment: center;
+                
+                if display_count > 1: HorizontalLayout {
+                    spacing: 8px;
+                    alignment: start;
+                    
+                    Rectangle {
+                        width: 16px;
+                        height: 16px;
+                        border-radius: 8px;
+                        background: #e7f1ff;
+                        
+                        Text {
+                            text: "i";
+                            font-size: 10px;
+                            font-weight: 700;
+                            color: #667eea;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Text {
+                        text: "Use Master Control to adjust all displays at once";
+                        font-size: 10px;
+                        color: #6c757d;
+                        vertical-alignment: center;
+                    }
+                }
+                
+                if display_count == 1: HorizontalLayout {
+                    spacing: 8px;
+                    alignment: start;
+                    
+                    Rectangle {
+                        width: 16px;
+                        height: 16px;
+                        border-radius: 8px;
+                        background: #fff3cd;
+                        
+                        BrightnessIcon {
+                            width: 12px;
+                            height: 12px;
+                            x: 2px;
+                            y: 2px;
+                        }
+                    }
+                    
+                    Text {
+                        text: "Drag the slider to adjust display brightness";
+                        font-size: 10px;
+                        color: #6c757d;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}

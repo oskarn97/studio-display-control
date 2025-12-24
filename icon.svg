@@ -1,0 +1,49 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" rx="64" fill="url(#bgGradient)"/>
+  
+  <!-- Monitor screen -->
+  <rect x="48" y="56" width="160" height="110" rx="8" fill="url(#screenGradient)" stroke="#ffffff" stroke-width="8"/>
+  
+  <!-- Screen content - brightness bars -->
+  <rect x="72" y="78" width="112" height="8" rx="4" fill="#667eea" opacity="0.8"/>
+  <rect x="72" y="94" width="90" height="8" rx="4" fill="#667eea" opacity="0.6"/>
+  <rect x="72" y="110" width="70" height="8" rx="4" fill="#667eea" opacity="0.4"/>
+  <rect x="72" y="126" width="50" height="8" rx="4" fill="#667eea" opacity="0.3"/>
+  
+  <!-- Monitor stand - vertical -->
+  <rect x="118" y="166" width="20" height="32" rx="4" fill="#ffffff"/>
+  
+  <!-- Monitor stand - base -->
+  <rect x="88" y="194" width="80" height="12" rx="6" fill="#ffffff"/>
+  
+  <!-- Brightness symbol -->
+  <circle cx="205" cy="205" r="35" fill="#ffc107" opacity="0.9"/>
+  <circle cx="205" cy="205" r="20" fill="#ffffff"/>
+  
+  <!-- Sun rays -->
+  <g fill="#ffc107" opacity="0.9">
+    <rect x="203" y="165" width="4" height="12" rx="2"/>
+    <rect x="203" y="233" width="4" height="12" rx="2"/>
+    <rect x="165" y="203" width="12" height="4" rx="2"/>
+    <rect x="233" y="203" width="12" height="4" rx="2"/>
+    
+    <rect x="175" y="175" width="4" height="10" rx="2" transform="rotate(45 177 180)"/>
+    <rect x="227" y="227" width="4" height="10" rx="2" transform="rotate(45 229 232)"/>
+    <rect x="227" y="175" width="4" height="10" rx="2" transform="rotate(-45 229 180)"/>
+    <rect x="175" y="227" width="4" height="10" rx="2" transform="rotate(-45 177 232)"/>
+  </g>
+</svg>
+
