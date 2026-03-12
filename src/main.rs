@@ -10,9 +10,12 @@ const MIN_BRIGHTNESS: u32 = 400;
 const MAX_BRIGHTNESS: u32 = 60000;
 const BRIGHTNESS_RANGE: u32 = MAX_BRIGHTNESS - MIN_BRIGHTNESS;
 
-const SD_PRODUCT_ID: u16 = 0x1114;
 const SD_VENDOR_ID: u16 = 0x05ac;
+const SD_PRODUCT_ID: u16 = 0x1114;
+const SD_XDR_PRODUCT_ID: u16 = 0x1116;
 const SD_INTERFACE_NR: i32 = 0x7;
+const SD_USAGE_PAGE: u16 = 0x0080;
+const SD_USAGE: u16 = 0x0001;
 
 fn get_brightness(handle: &mut hidapi::HidDevice) -> Result<u32, Box<dyn Error>> {
     let mut buf = Vec::with_capacity(7);
@@ -55,14 +58,26 @@ fn set_brightness_percent(handle: &mut hidapi::HidDevice, brightness: u8) -> Res
     Ok(())
 }
 
+fn is_supported_display(device: &hidapi::DeviceInfo) -> bool {
+    device.vendor_id() == SD_VENDOR_ID
+        && (device.product_id() == SD_PRODUCT_ID || device.product_id() == SD_XDR_PRODUCT_ID)
+        && device.interface_number() == SD_INTERFACE_NR
+        && device.usage_page() == SD_USAGE_PAGE
+        && device.usage() == SD_USAGE
+}
+
+fn display_model_name(device: &hidapi::DeviceInfo) -> &'static str {
+    match device.product_id() {
+        SD_XDR_PRODUCT_ID => "Studio Display XDR",
+        SD_PRODUCT_ID => "Studio Display",
+        _ => "Unknown Display",
+    }
+}
+
 fn studio_displays(hapi: &HidApi) -> Result<Vec<&hidapi::DeviceInfo>, Box<dyn Error>> {
     Ok(hapi
         .device_list()
-        .filter(|x| {
-            x.product_id() == SD_PRODUCT_ID
-                && x.vendor_id() == SD_VENDOR_ID
-                && x.interface_number() == SD_INTERFACE_NR
-        })
+        .filter(|x| is_supported_display(x))
         .collect())
 }
 
@@ -118,6 +133,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // --- Existing CLI mode ---
     let hapi = HidApi::new()?;
+
     let displays = studio_displays(&hapi)?;
     if displays.is_empty() {
         Err("No Apple Studio Display found")?;
@@ -125,8 +141,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for display in displays {
         let mut handle = hapi.open_path(display.path())?;
+        let model = display_model_name(display);
         if let Some(s) = display.serial_number() {
-            info!("display serial number {}", s);
+            info!("{} serial number {}", model, s);
         }
         if let Some(serial) = matches.get_one::<String>("serial") {
             if let Some(s) = display.serial_number() {
@@ -209,7 +226,8 @@ mod gui {
         for (idx, display) in displays_to_use.iter().enumerate() {
             let handle = hapi.open_path(display.path())?;
             let serial_num = display.serial_number().unwrap_or("Unknown").to_string();
-            let display_name = format!("Studio Display {}", idx + 1);
+            let model = display_model_name(display);
+            let display_name = format!("{} {}", model, idx + 1);
             
             display_handles.push(DisplayHandle {
                 handle: Rc::new(RefCell::new(handle)),

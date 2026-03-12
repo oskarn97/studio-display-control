@@ -1,3 +1,25 @@
+# Release v2.1 - Studio Display XDR Support
+
+## ✨ New Features
+
+### 🖥️ Apple Studio Display XDR Support
+- **Full compatibility** with the new Apple Studio Display XDR (2026, Product ID `0x1116`)
+- **Automatic model detection** - GUI shows correct model name (Studio Display vs Studio Display XDR)
+- **Mixed setups** - Control both Studio Display and Studio Display XDR in the same multi-monitor setup
+
+### 🔧 Improved HID Device Detection
+- **Usage Page filtering** - More precise HID device matching using Usage Page `0x0080` (Monitor Control)
+- **Fixes duplicate display entries** on devices with multiple HID collections (e.g. Studio Display XDR)
+
+## 📊 System Requirements
+
+- **OS:** Windows 10 or Windows 11
+- **Display:** Apple Studio Display (27-inch, 5K) or Apple Studio Display XDR
+- **Connection:** USB-C / Thunderbolt
+- **Permissions:** Standard user (no admin required)
+
+---
+
 # Release v2.0 - Modern Multi-Display UI
 
 ## 🎉 Major Update: Complete UI Overhaul
